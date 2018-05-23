@@ -22,8 +22,7 @@
   "homepage": "https://github.com/ModusCreateOrg/modus-cli#readme",
   "dependencies": {
     "@octokit/rest": "^15.6.1",
-    "argparse": "^1.0.10",
-    "shell.js": "^2.0.9",
+    "commander": "^2.15.1",
     "wget-improved": "^3.0.1"
   }
 }
