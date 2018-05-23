@@ -5,12 +5,6 @@ const path = require('path'),
       GitHub = require('../lib/GitHub');
 
 /* eslint-disable no-alert, no-console */
-const safeFilename = async (filename, overwrite) => {
-  if (overwrite) {
-    return filename;
-  }
-  return fs.existsSync(filename) ?  filename + '._modus_' : filename;
-};
 
 class Guidelines {
   constructor() {
@@ -40,29 +34,60 @@ class Guidelines {
       });
   }
 
+  async safeFilename(filename, overwrite) {
+    if (overwrite) {
+      this.stats.overwritten++;
+      return filename;
+    }
+    if (fs.existsSync(filename)) {
+      this.stats.conflicts++;
+      return filename + '._modus_';
+    }
+    else {
+      return filename;
+    }
+  }
+
   async action(args) {
     const {repo, overwrite, dest} = args;
+
+    this.stats = {
+      overwritten: 0,
+      conflicts:   0,
+      downloads:   0,
+      directories: 0,
+    };
 
     try {
       const data = await GitHub.getTree(repo);
       for (const node of data) {
         if (node.type === 'tree') {
-          const output = await safeFilename(path.join(dest, node.path), overwrite);
+          const output = await this.safeFilename(path.join(dest, node.path), overwrite);
+          this.stats.directories++;
           console.log('fs.mkdirSync(' + output + ', ' + node.mode + ');'); 
         }
       }
       for (const node of data) {
-        //      console.log('path', node.path);
         if (node.type !== 'tree') {
-          const output = await safeFilename(path.join(dest, node.path), overwrite);
+          const output = await this.safeFilename(path.join(dest, node.path), overwrite);
           console.log('wget(' + node.url + ',' + output + ');');
+          this.stats.downloads++;
         }
       }
     }
     catch (e) {
       console.log('e', e);
     }
+
+    const stats = this.stats;
+    console.log(`
+      ${stats.overwritten} files overwritten
+      ${stats.conflicts} file/directory conflicts
+      ${stats.downloads} new files downloaded
+      ${stats.directories} directories created
+    `);
   }
+
 }
 
 module.exports = new Guidelines;
