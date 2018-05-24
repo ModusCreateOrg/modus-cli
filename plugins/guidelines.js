@@ -65,12 +65,15 @@ class Guidelines {
           const output = await this.safeFilename(path.join(dest, node.path), overwrite);
           this.stats.directories++;
           console.log('fs.mkdirSync(' + output + ', ' + node.mode + ');'); 
+          fs.mkdirSync(output, node.mode); 
         }
       }
       for (const node of data) {
         if (node.type !== 'tree') {
           const output = await this.safeFilename(path.join(dest, node.path), overwrite);
-          console.log('wget(' + node.url + ',' + output + ');');
+          console.log('download(' + node.url + ',' + output + ');');
+          const downloader = new Downloader(node.url, output, node.mode);
+          await downloader.download();
           this.stats.downloads++;
         }
       }
