@@ -64,14 +64,19 @@ class Guidelines {
         if (node.type === 'tree') {
           const output = await this.safeFilename(path.join(dest, node.path), overwrite);
           this.stats.directories++;
-          console.log('fs.mkdirSync(' + output + ', ' + node.mode + ');'); 
-          fs.mkdirSync(output, node.mode); 
+          try {
+            console.log('creating directory => ' + output);
+            fs.mkdirSync(output, parseInt(node.mode, 8) | parseInt('755', 8)); 
+          }
+          catch (e) {
+            
+          }
         }
       }
       for (const node of data) {
         if (node.type !== 'tree') {
           const output = await this.safeFilename(path.join(dest, node.path), overwrite);
-          console.log('download(' + node.url + ',' + output + ');');
+          //          console.log('download(' + node.url + ',' + output + ');');
           const downloader = new Downloader(node.url, output, node.mode);
           await downloader.download();
           this.stats.downloads++;
