@@ -8,6 +8,7 @@ const path = require('path'),
 
 class Guidelines {
   constructor() {
+    this.sampleRe = new RegExp('.*\.sample\..*');
     this.action = this.action.bind(this);
     parser.command(
       'guidelines', 
@@ -23,6 +24,11 @@ class Guidelines {
             flags:       '-d, --dest <dir>',
             description: 'Set destination directory for files.  Defaults to .',
             default:     '.',
+          },
+          {
+            flags:       '-s, --samples',
+            description: 'Include *.sample.* files from repo',
+            default:     false,
           },
           {
             flags:       '-o, --overwrite',
@@ -49,7 +55,7 @@ class Guidelines {
   }
 
   async action(args) {
-    const {repo, overwrite, dest} = args;
+    const {repo, overwrite, dest, samples} = args;
 
     this.stats = {
       overwritten: 0,
@@ -59,8 +65,13 @@ class Guidelines {
     };
 
     try {
-      const data = await GitHub.getTree(repo);
+      const data = await GitHub.getTree(repo),
+            re = this.sampleRe;
+
       for (const node of data) {
+        if (re.test(node.path) && !samples) {
+          continue;
+        }
         if (node.type === 'tree') {
           const output = await this.safeFilename(path.join(dest, node.path), overwrite);
           this.stats.directories++;
@@ -69,11 +80,14 @@ class Guidelines {
             fs.mkdirSync(output, parseInt(node.mode, 8) | parseInt('755', 8)); 
           }
           catch (e) {
-            
+            // do nothing
           }
         }
       }
       for (const node of data) {
+        if (re.test(node.path) && !samples) {
+          continue;
+        }
         if (node.type !== 'tree') {
           const output = await this.safeFilename(path.join(dest, node.path), overwrite);
           //          console.log('download(' + node.url + ',' + output + ');');
