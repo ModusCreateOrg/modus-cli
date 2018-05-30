@@ -1,43 +1,46 @@
-const path = require('path'), 
-      fs = require('fs'),
-      parser = require('../lib/ArgumentParser'),
-      Downloader = require('../lib/Downloader'),
-      GitHub = require('../lib/GitHub');
+const path = require("path"),
+  fs = require("fs"),
+  parser = require("../lib/ArgumentParser"),
+  Downloader = require("../lib/Downloader"),
+  GitHub = require("../lib/GitHub");
 
 /* eslint-disable no-alert, no-console */
 
 class Guidelines {
   constructor() {
-    this.sampleRe = new RegExp('.*\.sample\..*');
+    this.sampleRe = new RegExp(".*.sample..*");
     this.action = this.action.bind(this);
     parser.command(
-      'guidelines', 
-      'Add Modus guidlines repo files to current directory',
+      "guidelines",
+      "Add Modus guidlines repo files to current directory",
       {
         options: [
           {
-            flags:       '-r, --repo <path>',
-            description: 'Set remote repo (org/repo/branch), defaults to ModusCrteateOrg/guidelines/master',
-            default:     'ModusCreateOrg/guidelines/master',
+            flags: "-r, --repo <path>",
+            description:
+              "Set remote repo (org/repo/branch), defaults to ModusCrteateOrg/guidelines/master",
+            default: "ModusCreateOrg/guidelines/master"
           },
           {
-            flags:       '-d, --dest <dir>',
-            description: 'Set destination directory for files.  Defaults to .',
-            default:     '.',
+            flags: "-d, --dest <dir>",
+            description: "Set destination directory for files.  Defaults to .",
+            default: "."
           },
           {
-            flags:       '-s, --samples',
-            description: 'Include *.sample.* files from repo',
-            default:     false,
+            flags: "-s, --samples",
+            description: "Include *.sample.* files from repo",
+            default: false
           },
           {
-            flags:       '-o, --overwrite',
-            description: 'Overwrite existing files from remote repository.  Otherwise, downloaded files that would overwrite are saved as filename._modus_.',
-            default:     false,
-          },
+            flags: "-o, --overwrite",
+            description:
+              "Overwrite existing files from remote repository.  Otherwise, downloaded files that would overwrite are saved as filename._modus_.",
+            default: false
+          }
         ],
         action: this.action
-      });
+      }
+    );
   }
 
   async safeFilename(filename, overwrite) {
@@ -47,39 +50,40 @@ class Guidelines {
     }
     if (fs.existsSync(filename)) {
       this.stats.conflicts++;
-      return filename + '._modus_';
-    }
-    else {
+      return filename + "._modus_";
+    } else {
       return filename;
     }
   }
 
   async action(args) {
-    const {repo, overwrite, dest, samples} = args;
+    const { repo, overwrite, dest, samples } = args;
 
     this.stats = {
       overwritten: 0,
-      conflicts:   0,
-      downloads:   0,
-      directories: 0,
+      conflicts: 0,
+      downloads: 0,
+      directories: 0
     };
 
     try {
       const data = await GitHub.getTree(repo),
-            re = this.sampleRe;
+        re = this.sampleRe;
 
       for (const node of data) {
         if (re.test(node.path) && !samples) {
           continue;
         }
-        if (node.type === 'tree') {
-          const output = await this.safeFilename(path.join(dest, node.path), overwrite);
+        if (node.type === "tree") {
+          const output = await this.safeFilename(
+            path.join(dest, node.path),
+            overwrite
+          );
           this.stats.directories++;
           try {
-            console.log('creating directory => ' + output);
-            fs.mkdirSync(output, parseInt(node.mode, 8) | parseInt('755', 8)); 
-          }
-          catch (e) {
+            console.log("creating directory => " + output);
+            fs.mkdirSync(output, parseInt(node.mode, 8) | parseInt("755", 8));
+          } catch (e) {
             // do nothing
           }
         }
@@ -88,17 +92,21 @@ class Guidelines {
         if (re.test(node.path) && !samples) {
           continue;
         }
-        if (node.type !== 'tree') {
-          const input = `https://raw.githubusercontent.com/${repo}/${node.path}`,
-                output = await this.safeFilename(path.join(dest, node.path), overwrite);
+        if (node.type !== "tree") {
+          const input = `https://raw.githubusercontent.com/${repo}/${
+              node.path
+            }`,
+            output = await this.safeFilename(
+              path.join(dest, node.path),
+              overwrite
+            );
           const downloader = new Downloader(input, output, node.mode);
           await downloader.download();
           this.stats.downloads++;
         }
       }
-    }
-    catch (e) {
-      console.log('e', e);
+    } catch (e) {
+      console.log("e", e);
     }
 
     const stats = this.stats;
@@ -109,8 +117,6 @@ class Guidelines {
       ${stats.directories} directories created
     `);
   }
-
 }
 
-module.exports = new Guidelines;
-
+module.exports = new Guidelines();
