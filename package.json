@@ -15,7 +15,7 @@
     "Create"
   ],
   "author": "Mike Schwartz <mike@moduscreate.com>",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/ModusCreateOrg/modus-cli/issues"
   },
