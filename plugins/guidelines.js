@@ -89,9 +89,9 @@ class Guidelines {
           continue;
         }
         if (node.type !== 'tree') {
-          const output = await this.safeFilename(path.join(dest, node.path), overwrite);
-          //          console.log('download(' + node.url + ',' + output + ');');
-          const downloader = new Downloader(node.url, output, node.mode);
+          const input = `https://raw.githubusercontent.com/${repo}/${node.path}`,
+                output = await this.safeFilename(path.join(dest, node.path), overwrite);
+          const downloader = new Downloader(input, output, node.mode);
           await downloader.download();
           this.stats.downloads++;
         }
