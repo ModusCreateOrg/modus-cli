@@ -4,6 +4,8 @@
   "description": "Expandable CLI tool for Modus Create projects",
   "main": "index.js",
   "scripts": {
+    "prettify": "prettier --write \"**/*.js\"",
+    "precommit": "lint-staged",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -23,5 +25,23 @@
   "dependencies": {
     "@octokit/rest": "^15.6.1",
     "commander": "^2.15.1"
+  },
+  "devDependencies": {
+    "husky": "0.14.3",
+    "lint-staged": "7.1.2",
+    "prettier": "1.13.2"
+  },
+  "prettier": {
+    "useTabs": false,
+    "tabWidth": 2,
+    "printWidth": 120,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "lint-staged": {
+    "**/*.js": [
+      "npm run prettify",
+      "git add"
+    ]
   }
 }
