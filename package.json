@@ -3,9 +3,14 @@
   "version": "1.0.0",
   "description": "Expandable CLI tool for Modus Create projects",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "engines": {
+    "node": ">=8"
   },
+  "scripts": {
+    "precommit": "lint-staged",
+    "lint:fix": "eslint . -f table --fix",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }, 
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ModusCreateOrg/modus-cli.git"
@@ -23,5 +28,27 @@
   "dependencies": {
     "@octokit/rest": "^15.6.1",
     "commander": "^2.15.1"
+  },
+  "devDependencies": {
+    "eslint": "4.19.1",
+    "eslint-config-airbnb": "16.1.0",
+    "eslint-config-prettier": "2.9.0",
+    "eslint-plugin-prettier": "2.6.0",
+    "husky": "0.14.3",
+    "lint-staged": "7.1.2",
+    "prettier": "1.13.2"
+  },
+  "prettier": {
+    "useTabs": false,
+    "tabWidth": 2,
+    "printWidth": 120,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "lint-staged": {
+    "**/*.js": [
+      "npm run lint:fix",
+      "git add"
+    ]
   }
 }
