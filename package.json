@@ -1,8 +1,11 @@
 {
-  "name": "modus-cli",
+  "name": "@modus/cli",
   "version": "1.0.0",
   "description": "Expandable CLI tool for Modus Create projects",
   "main": "index.js",
+  "bin" : {
+    "modus" : "index.js"
+  },
   "engines": {
     "node": ">=8"
   },
@@ -19,7 +22,6 @@
     "Modus",
     "Create"
   ],
-  "author": "Mike Schwartz <mike@moduscreate.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/ModusCreateOrg/modus-cli/issues"

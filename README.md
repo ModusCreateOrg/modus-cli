@@ -11,7 +11,7 @@ Useful utility functions for working with high-profile applications and open sou
 Download `modus` CLI from npm or yarn.
 
 ```shell
-npm -g install modus
+npm -g install @modus/cli
 ```
 
 ### Setting up Dev
@@ -51,7 +51,5 @@ Options:
 [![Modus Create](./images/modus.logo.svg)](https://moduscreate.com)
 
 ## Licensing
-
-State what the license is and how to find the text version of the license.
 
 e.g. This project is [MIT licensed](./LICENSE).
