@@ -52,4 +52,4 @@ Options:
 
 ## Licensing
 
-e.g. This project is [MIT licensed](./LICENSE).
+This project is [MIT licensed](./LICENSE).
