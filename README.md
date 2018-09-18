@@ -35,7 +35,7 @@ modus guidelines
 
 Usage: guidelines [options]
 
-Add Modus guidlines repo files to current directory
+Add Modus guidelines repo files to current directory
 
 Options:
 * `-r, --repo <path>`  Set remote repo (org/repo/branch), defaults to ModusCrteateOrg/guidelines/master (default:ModusCreateOrg/guidelines/master)
